@@ -92,8 +92,7 @@ class EventController extends BaseController
         }
     }
 
-    public function search_event(Request $request)
-    {
+    public function search_event(Request $request){
         $data_all = $request->all();     
         $event = Event::where('events.id', 'like', '%' . $request->event_search_val . '%')
             ->orWhere('events.name', 'like', '%' . $request->event_search_val . '%')
@@ -104,8 +103,7 @@ class EventController extends BaseController
         return view('event.event_list', [ 'events' => $event, 'search' => '1' ]);
     }
 
-    public function list_cache()
-    {
+    public function list_cache(){
         $cachedBlog = Redis::get('event');
         if(isset($cachedBlog)) {
             $event = json_decode($cachedBlog, FALSE);      
@@ -124,10 +122,5 @@ class EventController extends BaseController
                 'data'        => $event,
             ]);
         }        
-    }
-
-    public function list_remote()
-    {
-        return view('event.remote_list');
     }
 }

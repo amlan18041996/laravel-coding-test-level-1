@@ -32,7 +32,9 @@
                     <th scope="row">{{ event.id }}</th>
                     <td>{{ event.name }}</td>
                     <td>{{ event.slug }}</td>
-                    <td>{{ event.createdAt }}</td>
+                    <td>
+                        {{ new Date(event.createdAt).toLocaleString() }}
+                    </td>
                     <td class="d-flex justify-content-center">
                         <router-link
                             :to="{ path: '/edit/' + event.id }"
