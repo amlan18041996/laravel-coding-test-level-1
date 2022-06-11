@@ -24,7 +24,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="text-center" v-for="event in events" :key="event.id">
+                <tr
+                    class="text-center"
+                    v-for="event in events.data"
+                    :key="event.id"
+                >
                     <th scope="row">{{ event.id }}</th>
                     <td>{{ event.name }}</td>
                     <td>{{ event.slug }}</td>
@@ -46,6 +50,22 @@
                 </tr>
             </tbody>
         </table>
+        <div class="d-flex justify-content-center">
+            <button
+                :disabled="events.prev_page_url === null"
+                @click.prevent="loadData(events.prev_page_url)"
+                class="btn btn-primary btn-sm shadow-none me-2"
+            >
+                Previous
+            </button>
+            <button
+                :disabled="events.next_page_url === null"
+                @click.prevent="loadData(events.next_page_url)"
+                class="btn btn-primary btn-sm shadow-none ms-2"
+            >
+                Next
+            </button>
+        </div>
     </div>
 </template>
 
@@ -58,8 +78,8 @@ export default {
         };
     },
     methods: {
-        loadData() {
-            let url = this.url + "/api/v1/events";
+        loadData(pageUrl) {
+            let url = pageUrl ? pageUrl : this.url + "/api/v1/events";
             this.axios.get(url).then((res) => {
                 this.events = res.data.data;
             });

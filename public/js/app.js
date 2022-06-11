@@ -5565,6 +5565,26 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -5573,10 +5593,10 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    loadData: function loadData() {
+    loadData: function loadData(pageUrl) {
       var _this = this;
 
-      var url = this.url + "/api/v1/events";
+      var url = pageUrl ? pageUrl : this.url + "/api/v1/events";
       this.axios.get(url).then(function (res) {
         _this.events = res.data.data;
       });
@@ -5744,7 +5764,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   showSuccess: function showSuccess(title, message) {
-    Swal.fire(title, message, "success");
+    Swal.fire({
+      title: title,
+      text: message,
+      icon: 'success'
+    });
   },
   showError: function showError(title, message) {
     Swal.fire({
@@ -32578,7 +32602,7 @@ var render = function () {
   return _c("div", { staticClass: "container" }, [
     _c(
       "div",
-      { staticClass: "row justify-content-center" },
+      { staticClass: "row justify-content-center my-5" },
       [_c("router-view")],
       1
     ),
@@ -32904,7 +32928,7 @@ var render = function () {
       _vm._v(" "),
       _c(
         "tbody",
-        _vm._l(_vm.events, function (event) {
+        _vm._l(_vm.events.data, function (event) {
           return _c("tr", { key: event.id, staticClass: "text-center" }, [
             _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(event.id))]),
             _vm._v(" "),
@@ -32954,6 +32978,38 @@ var render = function () {
           ])
         }),
         0
+      ),
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "d-flex justify-content-center" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary btn-sm shadow-none me-2",
+          attrs: { disabled: _vm.events.prev_page_url === null },
+          on: {
+            click: function ($event) {
+              $event.preventDefault()
+              return _vm.loadData(_vm.events.prev_page_url)
+            },
+          },
+        },
+        [_vm._v("\n            Previous\n        ")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-primary btn-sm shadow-none ms-2",
+          attrs: { disabled: _vm.events.next_page_url === null },
+          on: {
+            click: function ($event) {
+              $event.preventDefault()
+              return _vm.loadData(_vm.events.next_page_url)
+            },
+          },
+        },
+        [_vm._v("\n            Next\n        ")]
       ),
     ]),
   ])
