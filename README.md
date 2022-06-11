@@ -1,6 +1,6 @@
 # Laravel Live Coding Test
 
-## Follow this steps
+## Instructions to run this project
 
 -   git clone https://github.com/amlan18041996/laravel-coding-test-level-1.git
 -   cd laravel-coding-test-level-1
