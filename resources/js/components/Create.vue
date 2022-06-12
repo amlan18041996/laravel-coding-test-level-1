@@ -18,7 +18,6 @@
                             type="text"
                             v-model="event_name"
                             class="form-control mb-3"
-                            placeholder="Type and press Enter.."
                         />
                     </div>
                     <div class="d-flex justify-content-between">
@@ -54,7 +53,13 @@ export default {
                 let formData = new FormData();
                 formData.append("event_name", this.event_name);
                 this.axios
-                    .post(url, formData)
+                    .post(url, formData, {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem(
+                                "token"
+                            )}`,
+                        },
+                    })
                     .then((res) => {
                         if (res.status) {
                             this.$utils.showSuccess("success", res.message);

@@ -1,6 +1,38 @@
 <template>
     <div class="col-md-8">
-        <h2>All Events</h2>
+        <h2 class="text-center">All Events</h2>
+        <div class="row">
+            <div class="col-md-3 py-2">
+                <span v-if="!loggedInToken">Hello Guest</span>
+                <span v-if="loggedInToken"
+                    >Welcome <span class="fw-bold">{{ user.name }}</span></span
+                >
+            </div>
+            <div class="col-md-6"></div>
+            <div class="col-md-3 text-end text-secondary pe-3 py-2">
+                <button
+                    @click.prevent="loginOrNavigate('/logout')"
+                    class="btn btn-primary btn-sm shadow-none"
+                    v-if="loggedInToken"
+                >
+                    Logout
+                </button>
+                <div v-if="!loggedInToken">
+                    <router-link
+                        to="/login"
+                        class="btn btn-primary btn-sm shadow-none me-2"
+                    >
+                        Login
+                    </router-link>
+                    <router-link
+                        to="/register"
+                        class="btn btn-primary btn-sm shadow-none"
+                    >
+                        Register
+                    </router-link>
+                </div>
+            </div>
+        </div>
         <div class="d-flex justify-content-between">
             <form>
                 <input
@@ -11,9 +43,12 @@
                     v-on:keydown.enter.prevent="searchValue"
                 />
             </form>
-            <router-link to="/create" class="btn btn-info">
+            <button
+                @click.prevent="loginOrNavigate('/create')"
+                class="btn btn-info"
+            >
                 Create an Event
-            </router-link>
+            </button>
         </div>
         <table class="table table-hover">
             <thead>
@@ -57,38 +92,51 @@
                         {{ new Date(event.createdAt).toLocaleString() }}
                     </td>
                     <td class="d-flex justify-content-center">
-                        <router-link
-                            :to="{ path: '/edit/' + event.id }"
+                        <button
+                            @click.prevent="
+                                loginOrNavigate(`/edit/${event.id}`)
+                            "
                             class="btn btn-warning btn-sm me-3"
                         >
                             Edit
-                        </router-link>
+                        </button>
 
-                        <router-link
-                            :to="{ path: '/delete/' + event.id }"
+                        <button
+                            @click.prevent="
+                                loginOrNavigate(`/delete/${event.id}`)
+                            "
                             class="btn btn-danger btn-sm me-3"
                         >
                             Delete
-                        </router-link>
+                        </button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="d-flex justify-content-center">
-            <button
-                :disabled="events.prev_page_url === null"
-                @click.prevent="loadData(events.prev_page_url)"
-                class="btn btn-primary btn-sm shadow-none me-2"
-            >
-                Previous
-            </button>
-            <button
-                :disabled="events.next_page_url === null"
-                @click.prevent="loadData(events.next_page_url)"
-                class="btn btn-primary btn-sm shadow-none ms-2"
-            >
-                Next
-            </button>
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6 text-center">
+                <button
+                    :disabled="events.prev_page_url === null"
+                    @click.prevent="loadData(events.prev_page_url)"
+                    class="btn btn-primary btn-sm shadow-none me-2"
+                >
+                    Previous
+                </button>
+                <button
+                    :disabled="events.next_page_url === null"
+                    @click.prevent="loadData(events.next_page_url)"
+                    class="btn btn-primary btn-sm shadow-none ms-2"
+                >
+                    Next
+                </button>
+            </div>
+            <div class="col-md-3 text-end text-secondary pe-3">
+                Page
+                <span class="text-dark fw-bold">{{ events.current_page }}</span>
+                <small>of</small>
+                <span class="text-dark fw-bold">{{ events.total_page }}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -102,9 +150,13 @@ export default {
                 data: [],
                 prev_page_url: "",
                 next_page_url: "",
+                current_page: 0,
+                total_page: 0,
             },
+            user: JSON.parse(localStorage.getItem("user")),
             search_value: "",
             loading: false,
+            loggedInToken: localStorage.getItem("token"),
         };
     },
     methods: {
@@ -122,12 +174,21 @@ export default {
                     this.events.data = res.data.data.data;
                     this.events.prev_page_url = res.data.data.prev_page_url;
                     this.events.next_page_url = res.data.data.next_page_url;
+                    this.events.current_page = res.data.data.current_page;
+                    this.events.total_page = res.data.data.last_page;
                     this.loading = false;
                 })
                 .catch((err) => (this.loading = false));
         },
         searchValue() {
             this.loadData();
+        },
+        loginOrNavigate(path) {
+            if (this.loggedInToken) {
+                this.$router.push(path);
+            } else {
+                this.$router.push("/login");
+            }
         },
     },
     mounted() {

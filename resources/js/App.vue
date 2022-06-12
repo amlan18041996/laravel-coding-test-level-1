@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center my-5">
+        <div class="row justify-content-center my-4">
             <router-view />
         </div>
     </div>

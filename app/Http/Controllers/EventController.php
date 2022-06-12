@@ -96,16 +96,6 @@ class EventController extends BaseController
         }
     }
 
-    // public function search_event(Request $request){
-    //     $event = Event::where('events.id', 'like', '%' . $request->search_value . '%')
-    //         ->orWhere('events.name', 'like', '%' . $request->search_value . '%')
-    //         ->orWhere('events.slug', 'like', '%' . $request->search_value . '%')
-    //         ->orderBy('createdAt', 'desc')
-    //         ->paginate($this->paginate);
-
-    //     return view('event.event_list', [ 'events' => $event, 'search' => '1' ]);
-    // }
-
     public function list_cache(){
         $cachedBlog = Redis::get('event');
         if(isset($cachedBlog)) {

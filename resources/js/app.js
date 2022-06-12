@@ -39,6 +39,9 @@ import Index from "./components/Index.vue";
 import Create from "./components/Create.vue";
 import Edit from "./components/Edit.vue";
 import Delete from "./components/Delete.vue";
+import Login from "./components/Login.vue";
+import Register from "./components/Register.vue";
+import Logout from "./components/Logout.vue";
 
 import utils from "./helpers/util.js";
 Vue.prototype.$utils = utils;
@@ -67,7 +70,22 @@ const routes = [
         name: "/delete",
         path: "/delete/:id",
         component: Delete
-    }
+    },
+    {
+        name: "/login",
+        path: "/login",
+        component: Login
+    },
+    {
+        name: "/register",
+        path: "/register",
+        component: Register
+    },
+    {
+        name: "/logout",
+        path: "/logout",
+        component: Logout
+    },
 ];
 
 const router = new VueRouter({ mode: 'history', routes: routes });

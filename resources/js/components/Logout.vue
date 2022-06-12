@@ -6,11 +6,11 @@
                     <div class="card-header fw-bold h4">
                         Confirm your action
                     </div>
-                    <div class="card-body">Do you really want to delete?</div>
+                    <div class="card-body">Do you really want to logout?</div>
                     <div class="card-footer d-flex justify-content-end">
                         <button
                             class="btn btn-danger btn-sm me-3 px-3"
-                            @click.prevent="deleteEvent()"
+                            @click.prevent="logout()"
                         >
                             Yes
                         </button>
@@ -33,10 +33,10 @@ export default {
         };
     },
     methods: {
-        deleteEvent() {
-            let url = `${this.url}/api/v1/events/${this.$route.params.id}`;
+        logout() {
+            let url = `${this.url}/api/user/logout`;
             this.axios
-                .delete(url, {
+                .post(url, "", {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem(
                             "token"
@@ -46,6 +46,7 @@ export default {
                 .then((res) => {
                     if (res.status) {
                         this.$utils.showSuccess("success", res.message);
+                        localStorage.clear();
                         setTimeout(() => {
                             this.$router.push("/");
                         }, 2000);
@@ -54,6 +55,7 @@ export default {
                     }
                 })
                 .catch((err) => {
+                    localStorage.clear();
                     this.errors.push(err.response.data.error);
                 });
         },

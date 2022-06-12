@@ -29,7 +29,6 @@
                             id="event_id"
                             v-model="event.id"
                             class="form-control mb-3"
-                            placeholder="Type and press Enter.."
                         />
                     </div>
                     <div class="mb-3">
@@ -41,7 +40,6 @@
                             id="event_name"
                             v-model="event_name"
                             class="form-control mb-3"
-                            placeholder="Type and press Enter.."
                         />
                     </div>
                     <div class="mb-3">
@@ -52,7 +50,6 @@
                             type="text"
                             v-model="event.slug"
                             class="form-control mb-3"
-                            placeholder="Type and press Enter.."
                         />
                     </div>
                     <div class="mb-3">
@@ -64,7 +61,6 @@
                             type="text"
                             id="created_at"
                             class="form-control mb-3"
-                            placeholder="Type and press Enter.."
                             v-model="new Date(event.createdAt).toLocaleString()"
                         />
                     </div>
@@ -77,7 +73,6 @@
                             type="text"
                             id="updated_at"
                             class="form-control mb-3"
-                            placeholder="Type and press Enter.."
                             v-model="new Date(event.updatedAt).toLocaleString()"
                         />
                     </div>
@@ -109,7 +104,13 @@ export default {
             let url = this.url + "/api/v1/events/" + this.$route.params.id;
             this.loading = true;
             this.axios
-                .get(url)
+                .get(url, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                })
                 .then((res) => {
                     this.loading = false;
                     this.event = res.data.data;
@@ -128,7 +129,17 @@ export default {
                 let formData = new FormData();
                 formData.append("event_name", this.event_name);
                 this.axios
-                    .put(url, { event_name: this.event_name })
+                    .put(
+                        url,
+                        { event_name: this.event_name },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "token"
+                                )}`,
+                            },
+                        }
+                    )
                     .then((res) => {
                         if (res.status) {
                             this.$utils.showSuccess("success", res.message);
