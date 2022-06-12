@@ -5324,11 +5324,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       url: document.head.querySelector('meta[name="url"]').content,
-      events: [],
       event_name: "",
       errors: []
     };
@@ -5350,6 +5351,10 @@ __webpack_require__.r(__webpack_exports__);
         this.axios.post(url, formData).then(function (res) {
           if (res.status) {
             _this.$utils.showSuccess("success", res.message);
+
+            setTimeout(function () {
+              _this.$router.push("/");
+            }, 2000);
           } else {
             _this.$utils.showError("error", res.message);
           }
@@ -5393,10 +5398,37 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "delete",
-  mounted: function mounted() {
-    console.log("Component mounted.");
+  data: function data() {
+    return {
+      url: document.head.querySelector('meta[name="url"]').content
+    };
+  },
+  methods: {
+    deleteEvent: function deleteEvent() {
+      var _this = this;
+
+      var url = this.url + "/api/v1/events/" + this.$route.params.id;
+      this.axios["delete"](url).then(function (res) {
+        if (res.status) {
+          _this.$utils.showSuccess("success", res.message);
+
+          setTimeout(function () {
+            _this.$router.push("/");
+          }, 2000);
+        } else {
+          _this.$utils.showError("error", res.message);
+        }
+      })["catch"](function (err) {
+        _this.errors.push(err.response.data.error);
+      });
+    }
   }
 });
 
@@ -5450,13 +5482,72 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       url: document.head.querySelector('meta[name="url"]').content,
-      event: [],
+      event: {},
+      errors: [],
       event_name: "",
-      errors: []
+      loading: false
     };
   },
   methods: {
@@ -5464,9 +5555,13 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       var url = this.url + "/api/v1/events/" + this.$route.params.id;
+      this.loading = true;
       this.axios.get(url).then(function (res) {
-        console.log(res.data.data);
+        _this.loading = false;
+        _this.event = res.data.data;
         _this.event_name = res.data.data.name;
+      })["catch"](function (err) {
+        return _this.loading = false;
       });
     },
     updateEvent: function updateEvent() {
@@ -5487,6 +5582,10 @@ __webpack_require__.r(__webpack_exports__);
         }).then(function (res) {
           if (res.status) {
             _this2.$utils.showSuccess("success", res.message);
+
+            setTimeout(function () {
+              _this2.$router.push("/");
+            }, 2000);
           } else {
             _this2.$utils.showError("error", res.message);
           }
@@ -5587,11 +5686,39 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       url: document.head.querySelector('meta[name="url"]').content,
-      events: []
+      events: {
+        data: [],
+        prev_page_url: "",
+        next_page_url: ""
+      },
+      search_value: "",
+      loading: false
     };
   },
   methods: {
@@ -5599,29 +5726,26 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       var url = pageUrl ? pageUrl : this.url + "/api/v1/events";
+
+      if (this.search_value !== "") {
+        url += pageUrl ? "&search_value=".concat(this.search_value) : "?search_value=".concat(this.search_value);
+      }
+
+      this.loading = true;
       this.axios.get(url).then(function (res) {
-        _this.events = res.data.data;
+        _this.events.data = res.data.data.data;
+        _this.events.prev_page_url = res.data.data.prev_page_url;
+        _this.events.next_page_url = res.data.data.next_page_url;
+        _this.loading = false;
+      })["catch"](function (err) {
+        return _this.loading = false;
       });
     },
-    deleteEvent: function deleteEvent(id) {
-      var _this2 = this;
-
-      var url = this.url + "/api/v1/events/" + id;
-      this.axios["delete"](url).then(function (res) {
-        if (res.status) {
-          _this2.loadData();
-
-          _this2.$utils.showSuccess("success", res.message);
-        } else {
-          _this2.$utils.showError("error", res.message);
-        }
-      })["catch"](function (err) {
-        _this2.errors.push(err.response.data.error);
-      });
+    searchValue: function searchValue() {
+      this.loadData();
     }
   },
   mounted: function mounted() {
-    console.log("Component mounted.");
     this.loadData();
   }
 });
@@ -32635,7 +32759,9 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "col-md-8 col-xl-6" }, [
     _c("div", { staticClass: "card" }, [
-      _c("div", { staticClass: "card-header" }, [_vm._v("Create an Event")]),
+      _c("div", { staticClass: "card-header fw-bold h4" }, [
+        _vm._v("Create an Event"),
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "card-body" }, [
         _c(
@@ -32687,9 +32813,9 @@ var render = function () {
                 ],
                 staticClass: "form-control mb-3",
                 attrs: {
-                  placeholder: "Type and press Enter..",
-                  type: "text",
                   id: "event",
+                  type: "text",
+                  placeholder: "Type and press Enter..",
                 },
                 domProps: { value: _vm.event_name },
                 on: {
@@ -32703,17 +32829,27 @@ var render = function () {
               }),
             ]),
             _vm._v(" "),
-            _c("button", { staticClass: "btn btn-info me-3" }, [
-              _vm._v("Submit"),
-            ]),
-            _vm._v(" "),
             _c(
-              "router-link",
-              { staticClass: "btn btn-primary", attrs: { to: "/" } },
-              [_vm._v("\n                    Cancel\n                ")]
+              "div",
+              { staticClass: "d-flex justify-content-between" },
+              [
+                _c(
+                  "router-link",
+                  { staticClass: "btn btn-primary me-3", attrs: { to: "/" } },
+                  [
+                    _vm._v(
+                      "\n                        Cancel\n                    "
+                    ),
+                  ]
+                ),
+                _vm._v(" "),
+                _c("button", { staticClass: "btn btn-info" }, [
+                  _vm._v("Submit"),
+                ]),
+              ],
+              1
             ),
-          ],
-          1
+          ]
         ),
       ]),
     ]),
@@ -32744,7 +32880,7 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-8" }, [
+      _c("div", { staticClass: "col-md-5" }, [
         _c("div", { staticClass: "card" }, [
           _c("div", { staticClass: "card-header" }, [
             _vm._v("Confirm your action"),
@@ -32756,16 +32892,29 @@ var render = function () {
           _vm._v(" "),
           _c(
             "div",
-            { staticClass: "card-footer" },
+            { staticClass: "card-footer d-flex justify-content-end" },
             [
-              _c("button", { staticClass: "btn btn-danger btn-sm me-3" }, [
-                _vm._v("Yes"),
-              ]),
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger btn-sm me-3 px-3",
+                  on: {
+                    click: function ($event) {
+                      $event.preventDefault()
+                      return _vm.deleteEvent()
+                    },
+                  },
+                },
+                [_vm._v("\n                        Yes\n                    ")]
+              ),
               _vm._v(" "),
               _c(
                 "router-link",
-                { staticClass: "btn btn-primary btn-sm", attrs: { to: "/" } },
-                [_vm._v("No")]
+                {
+                  staticClass: "btn btn-primary btn-sm px-3",
+                  attrs: { to: "/" },
+                },
+                [_vm._v("\n                        No\n                    ")]
               ),
             ],
             1
@@ -32800,91 +32949,280 @@ var render = function () {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "col-md-8 col-xl-6" }, [
     _c("div", { staticClass: "card" }, [
-      _c("div", { staticClass: "card-header" }, [_vm._v("Create an Event")]),
+      _c("div", { staticClass: "card-header fw-bold h4" }, [
+        _vm._v("Edit an Event"),
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "card-body" }, [
-        _c(
-          "form",
-          {
-            attrs: { id: "validateForm", novalidate: "" },
-            on: {
-              submit: function ($event) {
-                $event.preventDefault()
-                return _vm.updateEvent.apply(null, arguments)
-              },
-            },
-          },
-          [
-            _vm.errors.length
-              ? _c("div", { staticClass: "alert alert-danger" }, [
-                  _c(
-                    "ul",
-                    { staticClass: "mb-0" },
-                    _vm._l(_vm.errors, function (error, index) {
-                      return _c("li", { key: index }, [
-                        _vm._v(
-                          "\n                            " +
-                            _vm._s(error) +
-                            "\n                        "
-                        ),
-                      ])
-                    }),
-                    0
-                  ),
-                ])
-              : _vm._e(),
-            _vm._v(" "),
-            _c("div", { staticClass: "mb-3" }, [
-              _c(
-                "label",
-                { staticClass: "form-label", attrs: { for: "event" } },
-                [_vm._v("Event Name")]
-              ),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.event_name,
-                    expression: "event_name",
-                  },
-                ],
-                staticClass: "form-control mb-3",
-                attrs: {
-                  placeholder: "Type and press Enter..",
-                  type: "text",
-                  id: "event",
-                },
-                domProps: { value: _vm.event_name },
+        _vm.loading
+          ? _c("div", { staticClass: "text-center" }, [_vm._m(0)])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.loading === false && Object.keys(_vm.event).length
+          ? _c(
+              "form",
+              {
+                attrs: { novalidate: "", id: "validateForm" },
                 on: {
-                  input: function ($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.event_name = $event.target.value
+                  submit: function ($event) {
+                    $event.preventDefault()
+                    return _vm.updateEvent.apply(null, arguments)
                   },
                 },
-              }),
-            ]),
-            _vm._v(" "),
-            _c("button", { staticClass: "btn btn-info me-3" }, [
-              _vm._v("Submit"),
-            ]),
-            _vm._v(" "),
-            _c(
-              "router-link",
-              { staticClass: "btn btn-primary", attrs: { to: "/" } },
-              [_vm._v("\n                    Cancel\n                ")]
-            ),
-          ],
-          1
-        ),
+              },
+              [
+                _vm.errors.length
+                  ? _c("div", { staticClass: "alert alert-danger" }, [
+                      _c(
+                        "ul",
+                        { staticClass: "mb-0" },
+                        _vm._l(_vm.errors, function (error, index) {
+                          return _c("li", { key: index }, [
+                            _vm._v(
+                              "\n                            " +
+                                _vm._s(error) +
+                                "\n                        "
+                            ),
+                          ])
+                        }),
+                        0
+                      ),
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    { staticClass: "form-label", attrs: { for: "event_id" } },
+                    [_vm._v("ID")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.event.id,
+                        expression: "event.id",
+                      },
+                    ],
+                    staticClass: "form-control mb-3",
+                    attrs: {
+                      readonly: "",
+                      type: "text",
+                      id: "event_id",
+                      placeholder: "Type and press Enter..",
+                    },
+                    domProps: { value: _vm.event.id },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.event, "id", $event.target.value)
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    { staticClass: "form-label", attrs: { for: "event_name" } },
+                    [_vm._v("Event Name")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.event_name,
+                        expression: "event_name",
+                      },
+                    ],
+                    staticClass: "form-control mb-3",
+                    attrs: {
+                      type: "text",
+                      id: "event_name",
+                      placeholder: "Type and press Enter..",
+                    },
+                    domProps: { value: _vm.event_name },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.event_name = $event.target.value
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    { staticClass: "form-label", attrs: { for: "slug" } },
+                    [_vm._v("Slug")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.event.slug,
+                        expression: "event.slug",
+                      },
+                    ],
+                    staticClass: "form-control mb-3",
+                    attrs: {
+                      readonly: "",
+                      id: "slug",
+                      type: "text",
+                      placeholder: "Type and press Enter..",
+                    },
+                    domProps: { value: _vm.event.slug },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.event, "slug", $event.target.value)
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    { staticClass: "form-label", attrs: { for: "created_at" } },
+                    [_vm._v("Created at")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: new Date(_vm.event.createdAt).toLocaleString(),
+                        expression:
+                          "new Date(event.createdAt).toLocaleString()",
+                      },
+                    ],
+                    staticClass: "form-control mb-3",
+                    attrs: {
+                      readonly: "",
+                      type: "text",
+                      id: "created_at",
+                      placeholder: "Type and press Enter..",
+                    },
+                    domProps: {
+                      value: new Date(_vm.event.createdAt).toLocaleString(),
+                    },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          new Date(_vm.event.createdAt),
+                          "toLocaleString()",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "mb-3" }, [
+                  _c(
+                    "label",
+                    { staticClass: "form-label", attrs: { for: "updated_at" } },
+                    [_vm._v("Updated at")]
+                  ),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: new Date(_vm.event.updatedAt).toLocaleString(),
+                        expression:
+                          "new Date(event.updatedAt).toLocaleString()",
+                      },
+                    ],
+                    staticClass: "form-control mb-3",
+                    attrs: {
+                      readonly: "",
+                      type: "text",
+                      id: "updated_at",
+                      placeholder: "Type and press Enter..",
+                    },
+                    domProps: {
+                      value: new Date(_vm.event.updatedAt).toLocaleString(),
+                    },
+                    on: {
+                      input: function ($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(
+                          new Date(_vm.event.updatedAt),
+                          "toLocaleString()",
+                          $event.target.value
+                        )
+                      },
+                    },
+                  }),
+                ]),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  { staticClass: "d-flex justify-content-between" },
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        staticClass: "btn btn-primary me-3",
+                        attrs: { to: "/" },
+                      },
+                      [
+                        _vm._v(
+                          "\n                        Cancel\n                    "
+                        ),
+                      ]
+                    ),
+                    _vm._v(" "),
+                    _c("button", { staticClass: "btn btn-info" }, [
+                      _vm._v("Submit"),
+                    ]),
+                  ],
+                  1
+                ),
+              ]
+            )
+          : _vm._e(),
       ]),
     ]),
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "spinner-border text-secondary",
+        attrs: { role: "status" },
+      },
+      [_c("span", { staticClass: "visually-hidden" }, [_vm._v("Loading...")])]
+    )
+  },
+]
 render._withStripped = true
 
 
@@ -32914,7 +33252,39 @@ var render = function () {
       "div",
       { staticClass: "d-flex justify-content-between" },
       [
-        _vm._m(0),
+        _c("form", [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.search_value,
+                expression: "search_value",
+              },
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", placeholder: "Type and press Enter.." },
+            domProps: { value: _vm.search_value },
+            on: {
+              keydown: function ($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
+                }
+                $event.preventDefault()
+                return _vm.searchValue.apply(null, arguments)
+              },
+              input: function ($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.search_value = $event.target.value
+              },
+            },
+          }),
+        ]),
         _vm._v(" "),
         _c(
           "router-link",
@@ -32926,66 +33296,75 @@ var render = function () {
     ),
     _vm._v(" "),
     _c("table", { staticClass: "table table-hover" }, [
-      _vm._m(1),
+      _vm._m(0),
       _vm._v(" "),
       _c(
         "tbody",
-        _vm._l(_vm.events.data, function (event) {
-          return _c("tr", { key: event.id, staticClass: "text-center" }, [
-            _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(event.id))]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(event.name))]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(event.slug))]),
-            _vm._v(" "),
-            _c("td", [
-              _vm._v(
-                "\n                    " +
-                  _vm._s(new Date(event.createdAt).toLocaleString()) +
-                  "\n                "
-              ),
-            ]),
-            _vm._v(" "),
-            _c(
-              "td",
-              { staticClass: "d-flex justify-content-center" },
-              [
-                _c(
-                  "router-link",
-                  {
-                    staticClass: "btn btn-warning btn-sm me-3",
-                    attrs: { to: { path: "/edit/" + event.id } },
-                  },
-                  [
+        [
+          _vm.loading
+            ? _c("tr", { staticClass: "text-center" }, [_vm._m(1)])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.loading === false && _vm.events.data.length <= 0
+            ? _c("tr", { staticClass: "text-center" }, [_vm._m(2)])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._l(_vm.events.data, function (event, index) {
+            return _vm.loading === false && _vm.events.data.length > 0
+              ? _c("tr", { key: event.id, staticClass: "text-center" }, [
+                  _c("th", { attrs: { scope: "row" } }, [
+                    _vm._v(_vm._s(index + 1)),
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(event.name))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(event.slug))]),
+                  _vm._v(" "),
+                  _c("td", [
                     _vm._v(
-                      "\n                        Edit\n                    "
+                      "\n                    " +
+                        _vm._s(new Date(event.createdAt).toLocaleString()) +
+                        "\n                "
                     ),
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-danger btn-sm",
-                    on: {
-                      click: function ($event) {
-                        $event.preventDefault()
-                        return _vm.deleteEvent(event.id)
-                      },
-                    },
-                  },
-                  [
-                    _vm._v(
-                      "\n                        Delete\n                    "
-                    ),
-                  ]
-                ),
-              ],
-              1
-            ),
-          ])
-        }),
-        0
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "td",
+                    { staticClass: "d-flex justify-content-center" },
+                    [
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "btn btn-warning btn-sm me-3",
+                          attrs: { to: { path: "/edit/" + event.id } },
+                        },
+                        [
+                          _vm._v(
+                            "\n                        Edit\n                    "
+                          ),
+                        ]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "btn btn-danger btn-sm me-3",
+                          attrs: { to: { path: "/delete/" + event.id } },
+                        },
+                        [
+                          _vm._v(
+                            "\n                        Delete\n                    "
+                          ),
+                        ]
+                      ),
+                    ],
+                    1
+                  ),
+                ])
+              : _vm._e()
+          }),
+        ],
+        2
       ),
     ]),
     _vm._v(" "),
@@ -33027,20 +33406,9 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("form", [
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { placeholder: "Type and press Enter..", type: "text" },
-      }),
-    ])
-  },
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
     return _c("thead", [
       _c("tr", { staticClass: "text-center" }, [
-        _c("th", { attrs: { scope: "col" } }, [_vm._v("ID")]),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v("S. No.")]),
         _vm._v(" "),
         _c("th", { attrs: { scope: "col" } }, [_vm._v("Event Name")]),
         _vm._v(" "),
@@ -33050,6 +33418,29 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { attrs: { scope: "col text-center" } }, [_vm._v("Action")]),
       ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { staticClass: "table-active", attrs: { colspan: "5" } }, [
+      _c(
+        "div",
+        {
+          staticClass: "spinner-border text-secondary",
+          attrs: { role: "status" },
+        },
+        [_c("span", { staticClass: "visually-hidden" }, [_vm._v("Loading...")])]
+      ),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { staticClass: "table-active", attrs: { colspan: "5" } }, [
+      _c("span", [_vm._v("No Events are created yet!")]),
     ])
   },
 ]

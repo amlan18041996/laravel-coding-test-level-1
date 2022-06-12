@@ -1,7 +1,7 @@
 <template>
     <div class="col-md-8 col-xl-6">
         <div class="card">
-            <div class="card-header">Create an Event</div>
+            <div class="card-header fw-bold h4">Create an Event</div>
             <div class="card-body">
                 <form id="validateForm" @submit.prevent="saveEvent" novalidate>
                     <div class="alert alert-danger" v-if="errors.length">
@@ -14,17 +14,19 @@
                     <div class="mb-3">
                         <label for="event" class="form-label">Event Name</label>
                         <input
-                            placeholder="Type and press Enter.."
+                            id="event"
                             type="text"
                             v-model="event_name"
-                            id="event"
                             class="form-control mb-3"
+                            placeholder="Type and press Enter.."
                         />
                     </div>
-                    <button class="btn btn-info me-3">Submit</button>
-                    <router-link to="/" class="btn btn-primary">
-                        Cancel
-                    </router-link>
+                    <div class="d-flex justify-content-between">
+                        <router-link to="/" class="btn btn-primary me-3">
+                            Cancel
+                        </router-link>
+                        <button class="btn btn-info">Submit</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -36,7 +38,6 @@ export default {
     data() {
         return {
             url: document.head.querySelector('meta[name="url"]').content,
-            events: [],
             event_name: "",
             errors: [],
         };
@@ -57,6 +58,9 @@ export default {
                     .then((res) => {
                         if (res.status) {
                             this.$utils.showSuccess("success", res.message);
+                            setTimeout(() => {
+                                this.$router.push("/");
+                            }, 2000);
                         } else {
                             this.$utils.showError("error", res.message);
                         }

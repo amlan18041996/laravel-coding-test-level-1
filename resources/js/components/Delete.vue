@@ -1,15 +1,20 @@
 <template>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-5">
                 <div class="card">
                     <div class="card-header">Confirm your action</div>
                     <div class="card-body">Do you really want to delete?</div>
-                    <div class="card-footer">
-                        <button class="btn btn-danger btn-sm me-3">Yes</button>
-                        <router-link to="/" class="btn btn-primary btn-sm"
-                            >No</router-link
+                    <div class="card-footer d-flex justify-content-end">
+                        <button
+                            class="btn btn-danger btn-sm me-3 px-3"
+                            @click.prevent="deleteEvent()"
                         >
+                            Yes
+                        </button>
+                        <router-link to="/" class="btn btn-primary btn-sm px-3">
+                            No
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -20,8 +25,30 @@
 <script>
 export default {
     name: "delete",
-    mounted() {
-        console.log("Component mounted.");
+    data() {
+        return {
+            url: document.head.querySelector('meta[name="url"]').content,
+        };
+    },
+    methods: {
+        deleteEvent() {
+            let url = this.url + "/api/v1/events/" + this.$route.params.id;
+            this.axios
+                .delete(url)
+                .then((res) => {
+                    if (res.status) {
+                        this.$utils.showSuccess("success", res.message);
+                        setTimeout(() => {
+                            this.$router.push("/");
+                        }, 2000);
+                    } else {
+                        this.$utils.showError("error", res.message);
+                    }
+                })
+                .catch((err) => {
+                    this.errors.push(err.response.data.error);
+                });
+        },
     },
 };
 </script>
